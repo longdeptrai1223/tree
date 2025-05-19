@@ -35,8 +35,9 @@ services:
     env: node
     rootDir: client
     buildCommand: |
+      cd client
       npm install
-      npx react-scripts build
+      npm run build
     startCommand: serve -s build
     envVars:
       - key: NODE_ENV
