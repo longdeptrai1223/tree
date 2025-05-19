@@ -2,6 +2,7 @@ services:
   - type: web
     name: daily-au-rewards
     env: node
+    nodeVersion: 18.20.0
     buildCommand: npm ci && npx react-scripts build
     startCommand: npm start
     envVars:
