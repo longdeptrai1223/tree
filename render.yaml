@@ -1,38 +1,13 @@
 services:
   - type: web
-    name: daily-au-rewards
+    name: modern-web-app
     env: node
-    nodeVersion: 18.20.0
-    buildCommand: npm ci && npx react-scripts build
+    buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 3000
-      - key: DATABASE_URL
-        fromDatabase:
-          name: neondb
-          property: connectionString
-      - key: REACT_APP_ADMOB_APP_ID
-        value: ca-app-pub-7891419409776704~9902992860
-      - key: REACT_APP_ADMOB_REWARDED_ID
-        value: ca-app-pub-7891419409776704/7882500033
-      - key: REACT_APP_FIREBASE_API_KEY
-        value: AIzaSyAsqpmUjs2gaEybRZa5vhTJ4xNXrGMtwUY
-      - key: REACT_APP_FIREBASE_AUTH_DOMAIN
-        value: tree-6b50f.firebaseapp.com
-      - key: REACT_APP_FIREBASE_PROJECT_ID
-        value: tree-6b50f
-      - key: REACT_APP_FIREBASE_STORAGE_BUCKET
-        value: tree-6b50f.firebasestorage.app
-      - key: REACT_APP_FIREBASE_MESSAGING_SENDER_ID
-        value: 671068458518
-      - key: REACT_APP_FIREBASE_APP_ID
-        value: 1:671068458518:web:88ee56b2c7d6a250c12f37
-      - key: REACT_APP_FIREBASE_MEASUREMENT_ID
-        value: G-M35D7X347T
-      - key: REACT_APP_API_URL
-        value: https://daily-au-rewards.onrender.com
+      - key: NODE_VERSION
+        value: 18.20.0
     healthCheckPath: /api/health
     autoDeploy: true 
