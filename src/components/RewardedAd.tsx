@@ -4,6 +4,17 @@ import { APP_CONFIG } from '../config/app-config';
 import { RewardService } from '../services/RewardService';
 import { useAuth } from '../contexts/AuthContext';
 
+declare global {
+  interface Window {
+    adsbygoogle: any[];
+    AdMob: {
+      initialize: (config: any) => Promise<void>;
+      prepareRewardVideoAd: (config: any) => Promise<void>;
+      showRewardVideoAd: () => Promise<any>;
+    };
+  }
+}
+
 const AdContainer = styled.div`
   margin: 20px 0;
   padding: 20px;
@@ -54,6 +65,13 @@ const InfoText = styled.p`
   margin: 8px 0;
 `;
 
+const DisclaimerText = styled.p`
+  color: #999;
+  font-size: 12px;
+  text-align: center;
+  margin: 4px 0;
+`;
+
 const MultiplierText = styled.div`
   font-size: 16px;
   font-weight: 600;
@@ -71,37 +89,84 @@ const RewardedAd: React.FC<RewardedAdProps> = ({ onAdCompleted }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [adViews, setAdViews] = useState(0);
   const [cooldown, setCooldown] = useState(0);
+  const [isAdMobInitialized, setIsAdMobInitialized] = useState(false);
 
   useEffect(() => {
-    const timer = cooldown > 0 && setInterval(() => {
+    initializeAdMob();
+  }, []);
+
+  useEffect(() => {
+    const timer = cooldown > 0 ? setInterval(() => {
       setCooldown(prev => prev - 1);
-    }, 1000);
-    return () => timer && clearInterval(timer);
+    }, 1000) : undefined;
+    
+    return () => {
+      if (timer) clearInterval(timer);
+    };
   }, [cooldown]);
 
+  const initializeAdMob = async () => {
+    if (window.AdMob) {
+      try {
+        await window.AdMob.initialize({
+          appId: APP_CONFIG.ADMOB.APP_ID,
+          testDevices: APP_CONFIG.ADMOB.TEST_DEVICES,
+        });
+        setIsAdMobInitialized(true);
+      } catch (error) {
+        console.error('Error initializing AdMob:', error);
+      }
+    }
+  };
+
+  const prepareRewardedAd = async () => {
+    if (!window.AdMob) return;
+
+    try {
+      await window.AdMob.prepareRewardVideoAd({
+        adId: APP_CONFIG.ADMOB.REWARDED_ID,
+        isTesting: APP_CONFIG.ADMOB.IS_TEST_MODE,
+      });
+    } catch (error) {
+      console.error('Error preparing rewarded ad:', error);
+      throw error;
+    }
+  };
+
   const loadAndShowAd = async () => {
+    if (!isAdMobInitialized) {
+      alert('AdMob is not initialized. Please try again later.');
+      return;
+    }
+
+    if (adViews >= 10) {
+      alert('Daily ad limit reached. Please come back tomorrow!');
+      return;
+    }
+
     setIsLoading(true);
     try {
-      // TODO: Implement actual AdMob rewarded ad logic here
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated ad loading
+      await prepareRewardedAd();
+      const result = await window.AdMob.showRewardVideoAd();
       
-      // Simulate ad view completion
-      const newAdViews = adViews + 1;
-      setAdViews(newAdViews);
-      
-      // Calculate reward
-      const reward = RewardService.calculateDailyReward(userData!, [{
-        id: 'simulated',
-        userId: userData!.id,
-        date: new Date(),
-        count: newAdViews,
-        multiplier: APP_CONFIG.AD_REWARD_MULTIPLIER
-      }]);
-      
-      onAdCompleted(reward);
-      setCooldown(30); // 30 seconds cooldown
+      if (result.rewarded) {
+        const newAdViews = adViews + 1;
+        setAdViews(newAdViews);
+        
+        const reward = RewardService.calculateDailyReward(userData!, [{
+          id: 'admob_reward',
+          userId: userData!.id,
+          date: new Date(),
+          count: newAdViews,
+          multiplier: APP_CONFIG.AD_REWARD_MULTIPLIER
+        }]);
+        
+        onAdCompleted(reward);
+        setCooldown(30);
+      }
     } catch (error) {
       console.error('Error showing ad:', error);
+      alert('Error loading ad. Please try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -130,9 +195,10 @@ const RewardedAd: React.FC<RewardedAdProps> = ({ onAdCompleted }) => {
 
       <AdButton
         onClick={loadAndShowAd}
-        disabled={isDisabled}
+        disabled={isDisabled || !isAdMobInitialized}
       >
         {isLoading ? 'Loading Ad...' :
+         !isAdMobInitialized ? 'Initializing...' :
          cooldown > 0 ? `Wait ${cooldown}s` :
          currentMultiplier >= APP_CONFIG.MAX_AD_MULTIPLIER ? 'Max Multiplier Reached' :
          'Watch Ad for Bonus'}
@@ -141,6 +207,11 @@ const RewardedAd: React.FC<RewardedAdProps> = ({ onAdCompleted }) => {
       <InfoText>
         {adViews} / {Math.ceil(APP_CONFIG.MAX_AD_MULTIPLIER / APP_CONFIG.AD_REWARD_MULTIPLIER)} ads watched today
       </InfoText>
+
+      <DisclaimerText>
+        * Ads provided by Google AdMob. 
+        See <a href="/privacy-policy.html" target="_blank" rel="noopener noreferrer">privacy policy</a> for details.
+      </DisclaimerText>
     </AdContainer>
   );
 };

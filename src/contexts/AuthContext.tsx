@@ -90,9 +90,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
     } catch (error) {
       console.error('Error signing in with Google:', error);
-      logEvent(analytics, 'login_error', {
-        error: error.message
-      });
+      if (error instanceof Error) {
+        logEvent(analytics, 'login_error', {
+          error: error.message
+        });
+      }
       throw error;
     }
   };

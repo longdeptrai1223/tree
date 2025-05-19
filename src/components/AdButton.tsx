@@ -65,10 +65,15 @@ const RewardAdButton: React.FC<AdButtonProps> = ({
   const [cooldown, setCooldown] = useState(0);
 
   useEffect(() => {
-    const timer = cooldown > 0 && setInterval(() => {
-      setCooldown(prev => prev - 1);
-    }, 1000);
-    return () => timer && clearInterval(timer);
+    let timer: NodeJS.Timeout | undefined;
+    if (cooldown > 0) {
+      timer = setInterval(() => {
+        setCooldown(prev => prev - 1);
+      }, 1000);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
   }, [cooldown]);
 
   const handleClick = async () => {
