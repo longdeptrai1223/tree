@@ -2,12 +2,17 @@ services:
   - type: web
     name: modern-web-app
     env: node
-    buildCommand: npm install && npm run build
+    buildCommand: |
+      npm install
+      npm install typescript@5.3.3 --save-dev
+      npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: NODE_VERSION
         value: 18.20.0
+      - key: CI
+        value: false
     healthCheckPath: /api/health
     autoDeploy: true 
