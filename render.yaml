@@ -20,7 +20,6 @@ services:
     env: node
     rootDir: client
     buildCommand: |
-      cd client
       npm install
       npm run build
     startCommand: serve -s build
