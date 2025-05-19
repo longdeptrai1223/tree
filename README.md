@@ -1,6 +1,118 @@
-# Daily AU Rewards
+# Modern Web Application
 
-Ứng dụng web cho phép người dùng nhận phần thưởng AU hàng ngày thông qua việc xem quảng cáo và giới thiệu người dùng mới.
+A full-stack web application built with React (frontend) and Express (backend).
+
+## Project Structure
+
+```
+/
+├── client/             # Frontend React application
+│   ├── public/         # Static files
+│   ├── src/           # React source code
+│   ├── package.json   # Frontend dependencies
+│   ├── Dockerfile     # Frontend Docker configuration
+│   └── nginx.conf     # Nginx configuration
+│
+└── server/            # Backend Express application
+    ├── server.js      # Express server
+    ├── package.json   # Backend dependencies
+    └── Dockerfile     # Backend Docker configuration
+```
+
+## Prerequisites
+
+- Node.js 18.20.0
+- npm 9.x
+- Docker and Docker Compose (for containerized deployment)
+
+## Development
+
+### Using Docker (Recommended)
+
+1. Copy `.env.example` to `.env` and update the values:
+```bash
+cp .env.example .env
+```
+
+2. Build and start the containers:
+```bash
+docker-compose up --build
+```
+
+The application will be available at:
+- Frontend: http://localhost
+- Backend API: http://localhost:5000
+
+### Manual Development
+
+#### Frontend (React)
+
+```bash
+cd client
+npm install
+npm start
+```
+
+The frontend will be available at http://localhost:3000
+
+#### Backend (Express)
+
+```bash
+cd server
+npm install
+npm run dev
+```
+
+The backend API will be available at http://localhost:5000
+
+## Production Deployment
+
+### Using Docker
+
+1. Build the images:
+```bash
+docker-compose -f docker-compose.prod.yml build
+```
+
+2. Start the containers:
+```bash
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Manual Deployment
+
+#### Frontend
+
+```bash
+cd client
+npm install
+npm run build
+```
+
+#### Backend
+
+```bash
+cd server
+npm install
+npm start
+```
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and update the values for your environment.
+
+## Security Features
+
+- Helmet for HTTP headers security
+- CORS configuration
+- Rate limiting
+- Compression
+- Environment variables for sensitive data
+- Docker security best practices
+
+## License
+
+MIT
 
 ## Tính năng
 
@@ -52,14 +164,9 @@ npm start
 
 ## Triển khai
 
-Ứng dụng được cấu hình để triển khai tự động trên Render.com. Mọi thay đổi trên nhánh main sẽ được tự động triển khai.
-
-### Yêu cầu triển khai:
-
-1. Tạo tài khoản Render.com
-2. Liên kết repository GitHub
-3. Tạo database PostgreSQL trên Neon
-4. Cấu hình các biến môi trường trong Render dashboard
+Ứng dụng được cấu hình để triển khai tự động trên Render.com với hai dịch vụ:
+- Frontend: modern-web-app-frontend
+- Backend: modern-web-app-backend
 
 ## Bảo mật
 

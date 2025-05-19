@@ -1,11 +1,9 @@
 services:
   - type: web
-    name: modern-web-app
+    name: modern-web-app-backend
     env: node
-    buildCommand: |
-      npm install
-      npm install typescript@5.3.3 --save-dev
-      npm run build
+    rootDir: server
+    buildCommand: npm install
     startCommand: npm start
     envVars:
       - key: NODE_ENV
@@ -15,4 +13,26 @@ services:
       - key: CI
         value: false
     healthCheckPath: /api/health
+    autoDeploy: true
+
+  - type: web
+    name: modern-web-app-frontend
+    env: node
+    rootDir: client
+    buildCommand: |
+      npm install
+      npm run build
+    startCommand: serve -s build
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 18.20.0
+      - key: CI
+        value: false
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: modern-web-app-backend
+          envVarKey: RENDER_EXTERNAL_URL
     autoDeploy: true 
