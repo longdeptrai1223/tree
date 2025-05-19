@@ -1,4 +1,9 @@
 services:
+  - type: redis
+    name: modern-web-app-redis
+    ipAllowList: []
+    plan: free
+
   - type: web
     name: modern-web-app-backend
     env: node
@@ -12,15 +17,24 @@ services:
         value: 18.20.0
       - key: CI
         value: false
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: modern-web-app-redis
+          envVarKey: REDIS_URL
     healthCheckPath: /api/health
     autoDeploy: true
+    scaling:
+      minInstances: 1
+      maxInstances: 3
+      targetMemoryPercent: 80
+      targetCPUPercent: 80
 
   - type: web
     name: modern-web-app-frontend
     env: node
-    rootDir: .
+    rootDir: client
     buildCommand: |
-      cd client
       npm install
       npx react-scripts build
     startCommand: serve -s build
@@ -36,4 +50,9 @@ services:
           type: web
           name: modern-web-app-backend
           envVarKey: RENDER_EXTERNAL_URL
-    autoDeploy: true 
+    autoDeploy: true
+    scaling:
+      minInstances: 1
+      maxInstances: 3
+      targetMemoryPercent: 80
+      targetCPUPercent: 80 
