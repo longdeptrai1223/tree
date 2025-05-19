@@ -18,8 +18,9 @@ services:
   - type: web
     name: modern-web-app-frontend
     env: node
-    rootDir: client
+    rootDir: .
     buildCommand: |
+      cd client
       npm install
       npx react-scripts build
     startCommand: serve -s build
