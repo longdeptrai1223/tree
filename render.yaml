@@ -36,20 +36,30 @@ services:
     rootDir: .
     buildCommand: |
       export NODE_VERSION=18.20.0
-      echo "Current directory:"
+      echo "=== Bắt đầu quá trình build ==="
+      echo "1. Kiểm tra thư mục hiện tại:"
       pwd
-      echo "Listing directory contents:"
+      echo "2. Kiểm tra nội dung thư mục gốc:"
       ls -la
-      echo "Moving to client directory:"
+      echo "3. Kiểm tra thư mục client:"
+      ls -la client
+      echo "4. Di chuyển vào thư mục client:"
       cd client
-      echo "Current directory after cd:"
+      echo "5. Kiểm tra lại thư mục hiện tại:"
       pwd
-      echo "Listing client directory contents:"
-      ls -la
-      echo "Installing dependencies:"
+      echo "6. Kiểm tra package.json:"
+      if [ -f "package.json" ]; then
+        echo "package.json tồn tại"
+        cat package.json
+      else
+        echo "LỖI: Không tìm thấy package.json"
+        exit 1
+      fi
+      echo "7. Cài đặt dependencies:"
       npm install
-      echo "Building application:"
+      echo "8. Build ứng dụng:"
       npm run build
+      echo "=== Kết thúc quá trình build ==="
     startCommand: cd client && serve -s build
     envVars:
       - key: NODE_ENV
