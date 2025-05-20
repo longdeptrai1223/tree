@@ -44,9 +44,8 @@ services:
   - type: web
     name: modern-web-app-frontend
     env: node
-    rootDir: .
+    rootDir: client
     buildCommand: |
-      export NODE_VERSION=18.20.0
       echo "=== Bắt đầu quá trình build ==="
       echo "1. Kiểm tra môi trường:"
       echo "Node version:"
@@ -55,15 +54,9 @@ services:
       npm -v
       echo "2. Kiểm tra thư mục hiện tại:"
       pwd
-      echo "3. Kiểm tra nội dung thư mục gốc:"
+      echo "3. Kiểm tra nội dung thư mục:"
       ls -la
-      echo "4. Kiểm tra thư mục client:"
-      ls -la client
-      echo "5. Di chuyển vào thư mục client:"
-      cd client
-      echo "6. Kiểm tra lại thư mục hiện tại:"
-      pwd
-      echo "7. Kiểm tra package.json:"
+      echo "4. Kiểm tra package.json:"
       if [ -f "package.json" ]; then
         echo "package.json tồn tại"
         cat package.json
@@ -73,12 +66,12 @@ services:
         find /opt/render/project/src -name "package.json"
         exit 1
       fi
-      echo "8. Cài đặt dependencies:"
+      echo "5. Cài đặt dependencies:"
       npm install
-      echo "9. Build ứng dụng:"
+      echo "6. Build ứng dụng:"
       npm run build
       echo "=== Kết thúc quá trình build ==="
-    startCommand: cd client && serve -s build
+    startCommand: serve -s build
     envVars:
       - key: NODE_ENV
         value: development
