@@ -8,7 +8,14 @@ services:
     name: modern-web-app-backend
     env: node
     rootDir: server
-    buildCommand: npm install
+    buildCommand: |
+      echo "=== Kiểm tra môi trường ==="
+      echo "Node version:"
+      node -v
+      echo "NPM version:"
+      npm -v
+      echo "=== Cài đặt dependencies ==="
+      npm install
     startCommand: npm start
     envVars:
       - key: NODE_ENV
@@ -24,6 +31,8 @@ services:
           type: redis
           name: modern-web-app-redis
           envVarKey: REDIS_URL
+      - key: CORS_ORIGIN
+        value: https://modern-web-app-frontend.onrender.com
     healthCheckPath: /api/health
     autoDeploy: true
     scaling:
@@ -39,17 +48,22 @@ services:
     buildCommand: |
       export NODE_VERSION=18.20.0
       echo "=== Bắt đầu quá trình build ==="
-      echo "1. Kiểm tra thư mục hiện tại:"
+      echo "1. Kiểm tra môi trường:"
+      echo "Node version:"
+      node -v
+      echo "NPM version:"
+      npm -v
+      echo "2. Kiểm tra thư mục hiện tại:"
       pwd
-      echo "2. Kiểm tra nội dung thư mục gốc:"
+      echo "3. Kiểm tra nội dung thư mục gốc:"
       ls -la
-      echo "3. Kiểm tra thư mục client:"
+      echo "4. Kiểm tra thư mục client:"
       ls -la client
-      echo "4. Di chuyển vào thư mục client:"
+      echo "5. Di chuyển vào thư mục client:"
       cd client
-      echo "5. Kiểm tra lại thư mục hiện tại:"
+      echo "6. Kiểm tra lại thư mục hiện tại:"
       pwd
-      echo "6. Kiểm tra package.json:"
+      echo "7. Kiểm tra package.json:"
       if [ -f "package.json" ]; then
         echo "package.json tồn tại"
         cat package.json
@@ -59,9 +73,9 @@ services:
         find /opt/render/project/src -name "package.json"
         exit 1
       fi
-      echo "7. Cài đặt dependencies:"
+      echo "8. Cài đặt dependencies:"
       npm install
-      echo "8. Build ứng dụng:"
+      echo "9. Build ứng dụng:"
       npm run build
       echo "=== Kết thúc quá trình build ==="
     startCommand: cd client && serve -s build
