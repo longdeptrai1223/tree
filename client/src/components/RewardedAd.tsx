@@ -81,7 +81,7 @@ const MultiplierText = styled.div`
 `;
 
 interface RewardedAdProps {
-  onAdCompleted: (reward: number) => void;
+  onAdCompleted: () => void;
 }
 
 const RewardedAd: React.FC<RewardedAdProps> = ({ onAdCompleted }) => {
@@ -161,7 +161,7 @@ const RewardedAd: React.FC<RewardedAdProps> = ({ onAdCompleted }) => {
           multiplier: APP_CONFIG.AD_REWARD_MULTIPLIER
         }]);
         
-        onAdCompleted(reward);
+        onAdCompleted();
         setCooldown(30);
       }
     } catch (error) {

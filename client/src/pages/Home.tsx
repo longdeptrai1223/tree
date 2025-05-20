@@ -1,63 +1,100 @@
 import React from 'react';
 import styled from '@emotion/styled';
+import RewardedAd from '../components/RewardedAd';
 
 const AppContainer = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #232526 0%, #414345 100%);
   padding: 2rem;
 `;
 
 const Card = styled.div`
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(24, 24, 24, 0.95);
   border-radius: 1rem;
   padding: 2rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  margin: 0 auto;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  margin: 0 auto 2rem auto;
 `;
 
 const Title = styled.h1`
-  color: #1a202c;
+  color: #FFD600;
+  font-size: 2.2rem;
+  font-weight: bold;
+  text-align: left;
+  margin-bottom: 1.5rem;
+`;
+
+const Label = styled.div`
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+`;
+
+const AU = styled.div`
+  color: #FFD600;
   font-size: 2.5rem;
   font-weight: bold;
-  text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
+`;
+
+const SubLabel = styled.div`
+  color: #90caf9;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
 `;
 
 const Button = styled.button`
-  background: #667eea;
-  color: white;
+  background: #FFD600;
+  color: #232526;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   border: none;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 1.1rem;
   cursor: pointer;
+  margin-bottom: 1rem;
+  width: 100%;
   transition: all 0.2s;
-
   &:hover {
-    background: #5a67d8;
-    transform: translateY(-1px);
+    background: #ffe066;
+    color: #232526;
   }
 `;
 
 function Home() {
-  const [count, setCount] = React.useState(0);
+  const BASE_REWARD = 0.1;
+  const MAX_MULTIPLIER = 2;
+  const MULTIPLIER_STEP = 0.2;
+
+  const [au, setAu] = React.useState(0);
+  const [todayAu, setTodayAu] = React.useState(0);
+  const [multiplier, setMultiplier] = React.useState(1);
+
+  const handleClaim = () => {
+    const reward = BASE_REWARD * multiplier;
+    setAu(au + reward);
+    setTodayAu(reward);
+    setMultiplier(1); // reset multiplier sau khi claim
+  };
+
+  const handleAdReward = () => {
+    setMultiplier(m => Math.min(m + MULTIPLIER_STEP, MAX_MULTIPLIER));
+  };
 
   return (
     <AppContainer>
       <Card>
-        <Title>Welcome to My Modern Web App</Title>
-        <div className="text-center">
-          <p className="text-gray-700 text-lg mb-4">
-            This is a beautiful and modern React application with TypeScript.
-          </p>
-          <p className="text-gray-600 mb-6">
-            Click count: {count}
-          </p>
-          <Button onClick={() => setCount(count + 1)}>
-            Click me!
-          </Button>
-        </div>
+        <Title>My Wallet</Title>
+        <AU>{au.toFixed(2)} AU</AU>
+        <SubLabel>+{todayAu.toFixed(2)} hôm nay</SubLabel>
+        <div>Hệ số thưởng hiện tại: x{multiplier.toFixed(1)}</div>
+        <Button onClick={handleClaim}>CLAIM DAILY AU</Button>
+      </Card>
+      <Card>
+        <Title>Bắt đầu</Title>
+        <Label>Phần thưởng quảng cáo</Label>
+        <RewardedAd onAdCompleted={handleAdReward} />
       </Card>
     </AppContainer>
   );
