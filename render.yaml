@@ -17,6 +17,8 @@ services:
         value: 18.20.0
       - key: CI
         value: false
+      - key: PORT
+        value: 3001
       - key: REDIS_URL
         fromService:
           type: redis
@@ -68,6 +70,8 @@ services:
         value: 18.20.0
       - key: CI
         value: false
+      - key: PORT
+        value: 3000
       - key: REACT_APP_API_URL
         fromService:
           type: web
