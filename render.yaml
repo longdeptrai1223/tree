@@ -44,26 +44,20 @@ services:
   - type: web
     name: modern-web-app-frontend
     env: node
-    rootDir: client
+    rootDir: .
     buildCommand: |
       echo "=== Bắt đầu quá trình build ==="
-      echo "1. Kiểm tra môi trường:"
-      echo "Node version:"
-      node -v
-      echo "NPM version:"
-      npm -v
-      echo "2. Kiểm tra thư mục hiện tại:"
+      echo "1. Kiểm tra thư mục hiện tại:"
       pwd
-      echo "3. Kiểm tra nội dung thư mục:"
+      echo "2. Kiểm tra nội dung thư mục:"
       ls -la
+      echo "3. Di chuyển vào thư mục client:"
+      cd client
       echo "4. Kiểm tra package.json:"
       if [ -f "package.json" ]; then
         echo "package.json tồn tại"
-        cat package.json
       else
         echo "LỖI: Không tìm thấy package.json"
-        echo "Tìm kiếm package.json trong toàn bộ dự án:"
-        find /opt/render/project/src -name "package.json"
         exit 1
       fi
       echo "5. Cài đặt dependencies:"
@@ -71,7 +65,7 @@ services:
       echo "6. Build ứng dụng:"
       npm run build
       echo "=== Kết thúc quá trình build ==="
-    startCommand: serve -s build
+    startCommand: cd client && serve -s build
     envVars:
       - key: NODE_ENV
         value: development
@@ -86,6 +80,7 @@ services:
           type: web
           name: modern-web-app-backend
           envVarKey: RENDER_EXTERNAL_URL
+    healthCheckPath: /
     autoDeploy: true
     scaling:
       minInstances: 1
