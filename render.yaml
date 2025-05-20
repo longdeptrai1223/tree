@@ -123,7 +123,10 @@ services:
     env: node
     region: singapore
     plan: standard
-    buildCommand: cd client && npm install && chmod +x node_modules/.bin/react-scripts && npx react-scripts build
+    buildCommand: |
+      cd client
+      npm install
+      npx react-scripts build
     startCommand: cd client && npx serve -s build
     envVars:
       - key: REACT_APP_API_URL
