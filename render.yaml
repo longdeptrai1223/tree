@@ -33,13 +33,14 @@ services:
   - type: web
     name: modern-web-app-frontend
     env: node
-    rootDir: .
+    rootDir: client
     buildCommand: |
       export NODE_VERSION=18.20.0
-      cd client
+      pwd
+      ls -la
       npm install
       npm run build
-    startCommand: cd client && serve -s build
+    startCommand: serve -s build
     envVars:
       - key: NODE_ENV
         value: production
