@@ -80,11 +80,28 @@ const MultiplierText = styled.div`
   margin: 10px 0;
 `;
 
+const SmallAdButton = styled.button`
+  background: #FFD600;
+  color: #232526;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  cursor: pointer;
+`;
+
 interface RewardedAdProps {
   onAdCompleted: () => void;
+  iconOnly?: boolean;
+  onAdViewsChange?: (adViews: number) => void;
 }
 
-const RewardedAd: React.FC<RewardedAdProps> = ({ onAdCompleted }) => {
+const RewardedAd: React.FC<RewardedAdProps> = ({ onAdCompleted, iconOnly, onAdViewsChange }) => {
   const { userData } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [adViews, setAdViews] = useState(0);
@@ -104,6 +121,10 @@ const RewardedAd: React.FC<RewardedAdProps> = ({ onAdCompleted }) => {
       if (timer) clearInterval(timer);
     };
   }, [cooldown]);
+
+  useEffect(() => {
+    if (onAdViewsChange) onAdViewsChange(adViews);
+  }, [adViews, onAdViewsChange]);
 
   const initializeAdMob = async () => {
     if (window.AdMob) {
@@ -178,6 +199,14 @@ const RewardedAd: React.FC<RewardedAdProps> = ({ onAdCompleted }) => {
   );
 
   const isDisabled = isLoading || cooldown > 0 || currentMultiplier >= APP_CONFIG.MAX_AD_MULTIPLIER;
+
+  if (iconOnly) {
+    return (
+      <SmallAdButton onClick={loadAndShowAd} disabled={isDisabled || !isAdMobInitialized} title="Xem quảng cáo">
+        <span role="img" aria-label="ad">🎬</span>
+      </SmallAdButton>
+    );
+  }
 
   return (
     <AdContainer>

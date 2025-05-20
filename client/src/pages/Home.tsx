@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import RewardedAd from '../components/RewardedAd';
+import { useNavigate } from 'react-router-dom';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -62,6 +63,44 @@ const Button = styled.button`
   }
 `;
 
+const FloatingButton = styled.button`
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #FFD600;
+  color: #232526;
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  cursor: pointer;
+  z-index: 1000;
+`;
+
+const FloatingRefButton = styled.button`
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  cursor: pointer;
+  z-index: 1000;
+`;
+
 function Home() {
   const BASE_REWARD = 0.1;
   const MAX_MULTIPLIER = 2;
@@ -70,6 +109,9 @@ function Home() {
   const [au, setAu] = React.useState(0);
   const [todayAu, setTodayAu] = React.useState(0);
   const [multiplier, setMultiplier] = React.useState(1);
+  const [adViews, setAdViews] = React.useState(0);
+
+  const navigate = useNavigate();
 
   const handleClaim = () => {
     const reward = BASE_REWARD * multiplier;
@@ -89,13 +131,15 @@ function Home() {
         <AU>{au.toFixed(2)} AU</AU>
         <SubLabel>+{todayAu.toFixed(2)} hôm nay</SubLabel>
         <div>Hệ số thưởng hiện tại: x{multiplier.toFixed(1)}</div>
+        <div style={{color:'#90caf9', fontSize:'1rem', marginBottom:8}}>Quảng cáo đã xem hôm nay: {adViews}/10</div>
         <Button onClick={handleClaim}>CLAIM DAILY AU</Button>
       </Card>
-      <Card>
-        <Title>Bắt đầu</Title>
-        <Label>Phần thưởng quảng cáo</Label>
-        <RewardedAd onAdCompleted={handleAdReward} />
-      </Card>
+      <FloatingButton title="Xem quảng cáo" aria-label="Xem quảng cáo">
+        <RewardedAd onAdCompleted={handleAdReward} iconOnly onAdViewsChange={setAdViews} />
+      </FloatingButton>
+      <FloatingRefButton title="Mời bạn bè" aria-label="Mời bạn bè" onClick={() => navigate('/referrals')}>
+        <span role="img" aria-label="ref">🤝</span>
+      </FloatingRefButton>
     </AppContainer>
   );
 }

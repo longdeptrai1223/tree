@@ -4,9 +4,9 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import { useAuth } from './contexts/AuthContext';
+import Referrals from './pages/Referrals';
 // Placeholder components for new pages
 const Mining = () => <div style={{color:'#fff',textAlign:'center',marginTop:'2rem'}}>Tính năng Bắt đầu sẽ sớm có!</div>;
-const Referrals = () => <div style={{color:'#fff',textAlign:'center',marginTop:'2rem'}}>Tính năng Referrals sẽ sớm có!</div>;
 const Profile = () => <div style={{color:'#fff',textAlign:'center',marginTop:'2rem'}}>Tính năng Profile sẽ sớm có!</div>;
 
 function RequireAuth({ children }: { children: JSX.Element }) {
@@ -25,7 +25,6 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<RequireAuth><Home /></RequireAuth>} />
-          <Route path="/mining" element={<RequireAuth><Mining /></RequireAuth>} />
           <Route path="/referrals" element={<RequireAuth><Referrals /></RequireAuth>} />
           <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
         </Routes>

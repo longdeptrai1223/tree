@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
   min-height: 100vh;
@@ -42,11 +43,18 @@ const GoogleButton = styled.button`
 
 const Login: React.FC = () => {
   const { signInWithGoogle } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogin = async () => {
+    await signInWithGoogle();
+    navigate('/');
+  };
+
   return (
     <Container>
       <Card>
         <Title>Đăng nhập để sử dụng ứng dụng</Title>
-        <GoogleButton onClick={signInWithGoogle}>
+        <GoogleButton onClick={handleLogin}>
           Đăng nhập với Google
         </GoogleButton>
       </Card>
