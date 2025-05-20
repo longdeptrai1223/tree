@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import RewardedAd from '../components/RewardedAd';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { RewardService } from '../services/RewardService';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -61,6 +67,10 @@ const Button = styled.button`
     background: #ffe066;
     color: #232526;
   }
+  &:disabled {
+    background: #666;
+    cursor: not-allowed;
+  }
 `;
 
 const FloatingButton = styled.button`
@@ -101,43 +111,119 @@ const FloatingRefButton = styled.button`
   z-index: 1000;
 `;
 
-function Home() {
-  const BASE_REWARD = 0.1;
-  const MAX_MULTIPLIER = 2;
-  const MULTIPLIER_STEP = 0.2;
+const CountdownText = styled.div`
+  color: #90caf9;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 1rem 0;
+`;
 
-  const [au, setAu] = React.useState(0);
-  const [todayAu, setTodayAu] = React.useState(0);
-  const [multiplier, setMultiplier] = React.useState(1);
-  const [adViews, setAdViews] = React.useState(0);
+function Home() {
+  const { t } = useTranslation();
+  const { userData } = useAuth();
+  const [au, setAu] = useState(0);
+  const [todayAu, setTodayAu] = useState(0);
+  const [multiplier, setMultiplier] = useState(1);
+  const [adViews, setAdViews] = useState(0);
+  const [timeLeft, setTimeLeft] = useState<number>(0);
+  const [canClaim, setCanClaim] = useState(false);
 
   const navigate = useNavigate();
 
-  const handleClaim = () => {
-    const reward = BASE_REWARD * multiplier;
-    setAu(au + reward);
-    setTodayAu(reward);
-    setMultiplier(1); // reset multiplier sau khi claim
+  useEffect(() => {
+    if (userData) {
+      setAu(userData.currentAu);
+      checkRewardEligibility();
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (userData?.lastRewardClaim) {
+        const remainingTime = RewardService.getTimeUntilNextReward(userData.lastRewardClaim);
+        setTimeLeft(remainingTime);
+        setCanClaim(remainingTime <= 0);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [userData?.lastRewardClaim]);
+
+  const checkRewardEligibility = () => {
+    if (!userData?.lastRewardClaim) {
+      setCanClaim(true);
+      return;
+    }
+
+    const remainingTime = RewardService.getTimeUntilNextReward(userData.lastRewardClaim);
+    setTimeLeft(remainingTime);
+    setCanClaim(remainingTime <= 0);
+  };
+
+  const handleClaim = async () => {
+    if (!userData || !canClaim) return;
+
+    try {
+      const reward = RewardService.calculateDailyReward(userData, [{
+        id: 'daily_reward',
+        userId: userData.id,
+        date: new Date(),
+        count: adViews,
+        multiplier: multiplier
+      }]);
+
+      const newAu = userData.currentAu + reward;
+      
+      // Update user data in Firestore
+      const userRef = doc(db, 'users', userData.id);
+      await updateDoc(userRef, {
+        currentAu: newAu,
+        lastRewardClaim: new Date()
+      });
+
+      setAu(newAu);
+      setTodayAu(reward);
+      setMultiplier(1);
+      setCanClaim(false);
+      setTimeLeft(24 * 60 * 60 * 1000); // Reset timer to 24 hours
+    } catch (error) {
+      console.error(t('errors.claimReward'), error);
+    }
   };
 
   const handleAdReward = () => {
-    setMultiplier(m => Math.min(m + MULTIPLIER_STEP, MAX_MULTIPLIER));
+    setMultiplier(m => Math.min(m + 0.2, 2));
   };
 
   return (
     <AppContainer>
+      <LanguageSwitcher />
       <Card>
-        <Title>My Wallet</Title>
+        <Title>{t('wallet.title')}</Title>
         <AU>{au.toFixed(2)} AU</AU>
-        <SubLabel>+{todayAu.toFixed(2)} hôm nay</SubLabel>
-        <div>Hệ số thưởng hiện tại: x{multiplier.toFixed(1)}</div>
-        <div style={{color:'#90caf9', fontSize:'1rem', marginBottom:8}}>Quảng cáo đã xem hôm nay: {adViews}/10</div>
-        <Button onClick={handleClaim}>CLAIM DAILY AU</Button>
+        <SubLabel>+{todayAu.toFixed(2)} {t('wallet.todayEarnings')}</SubLabel>
+        <div>{t('wallet.currentMultiplier')}: x{multiplier.toFixed(1)}</div>
+        <div style={{color:'#90caf9', fontSize:'1rem', marginBottom:8}}>
+          {t('wallet.adViews')}: {adViews}/10
+        </div>
+        {timeLeft > 0 && (
+          <CountdownText>
+            {t('wallet.waitingTime')}: {RewardService.formatTimeLeft(timeLeft)}
+          </CountdownText>
+        )}
+        <Button onClick={handleClaim} disabled={!canClaim}>
+          {canClaim ? t('wallet.claimButton.ready') : t('wallet.claimButton.waiting')}
+        </Button>
       </Card>
-      <FloatingButton title="Xem quảng cáo" aria-label="Xem quảng cáo">
+      <FloatingButton title={t('common.adButton.title')} aria-label={t('common.adButton.title')}>
         <RewardedAd onAdCompleted={handleAdReward} iconOnly onAdViewsChange={setAdViews} />
       </FloatingButton>
-      <FloatingRefButton title="Mời bạn bè" aria-label="Mời bạn bè" onClick={() => navigate('/referrals')}>
+      <FloatingRefButton 
+        title={t('common.referralButton.title')} 
+        aria-label={t('common.referralButton.title')} 
+        onClick={() => navigate('/referrals')}
+      >
         <span role="img" aria-label="ref">🤝</span>
       </FloatingRefButton>
     </AppContainer>
