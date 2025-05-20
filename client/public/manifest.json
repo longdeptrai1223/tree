@@ -9,13 +9,13 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "icons/logo192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "logo512.png",
+      "src": "icons/logo512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
@@ -47,12 +47,12 @@
       "short_name": "Reward",
       "description": "Claim your daily reward",
       "url": "/reward",
-      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "icons/logo192.png", "sizes": "192x192" }]
     }
   ],
   "screenshots": [
     {
-      "src": "screenshot1.png",
+      "src": "icons/screenshot1.png",
       "sizes": "1280x720",
       "type": "image/png",
       "platform": "wide",
