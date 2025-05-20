@@ -65,7 +65,7 @@ services:
       echo "6. Build ứng dụng:"
       npm run build
       echo "=== Kết thúc quá trình build ==="
-    startCommand: cd client && serve -s build
+    startCommand: cd client && npx serve -s build
     envVars:
       - key: NODE_ENV
         value: development
