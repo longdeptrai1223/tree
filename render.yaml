@@ -86,4 +86,52 @@ services:
       minInstances: 1
       maxInstances: 3
       targetMemoryPercent: 80
-      targetCPUPercent: 80 
+      targetCPUPercent: 80
+
+  - type: web
+    name: au-rewards-backend
+    env: node
+    region: singapore
+    plan: standard
+    buildCommand: cd server && npm install && npm run build
+    startCommand: cd server && npm install -g pm2 && pm2 start ecosystem.config.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: REDIS_URL
+        sync: false
+      - key: DB_HOST
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false
+    healthCheckPath: /api/health
+    autoDeploy: true
+    scaling:
+      minInstances: 3
+      maxInstances: 10
+      targetMemoryPercent: 70
+      targetCPUPercent: 70
+
+  - type: web
+    name: au-rewards-frontend
+    env: node
+    region: singapore
+    plan: standard
+    buildCommand: cd client && npm install && npm run build
+    startCommand: cd client && npx serve -s build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://au-rewards-backend.onrender.com
+    healthCheckPath: /
+    autoDeploy: true
+    scaling:
+      minInstances: 2
+      maxInstances: 5
+      targetMemoryPercent: 70
+      targetCPUPercent: 70 

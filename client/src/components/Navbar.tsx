@@ -49,7 +49,9 @@ function Navbar() {
         <Logo to="/">Modern Web App</Logo>
         <NavLinks>
           <NavLink to="/">Home</NavLink>
-          <NavLink to="/about">About</NavLink>
+          <NavLink to="/mining">Bắt đầu</NavLink>
+          <NavLink to="/referrals">Referrals</NavLink>
+          <NavLink to="/profile">Profile</NavLink>
         </NavLinks>
       </NavContainer>
     </Nav>

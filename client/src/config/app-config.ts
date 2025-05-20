@@ -5,10 +5,11 @@ export const APP_CONFIG = {
   MAX_REFERRAL_MULTIPLIER: 5,
   MAX_REFERRALS: 10,
   AD_REWARD_MULTIPLIER: 0.2,
+  REF_REWARD_MULTIPLIER: 0.5,
 
   // Time Configuration
   DAILY_REWARD_COOLDOWN: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
-  AD_COOLDOWN: 30 * 1000, // 30 seconds in milliseconds
+  AD_COOLDOWN: 5 * 1000, // 5 seconds in milliseconds
 
   // AdMob Configuration for Android
   ADMOB: {

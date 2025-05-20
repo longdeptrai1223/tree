@@ -56,7 +56,7 @@ export class RewardService {
   }
 
   static calculateReferralMultiplier(referralCount: number): number {
-    const multiplierPerReferral = APP_CONFIG.AD_REWARD_MULTIPLIER;
+    const multiplierPerReferral = APP_CONFIG.REF_REWARD_MULTIPLIER;
     const maxMultiplier = APP_CONFIG.MAX_REFERRAL_MULTIPLIER;
     const calculatedMultiplier = 1 + (referralCount * multiplierPerReferral);
     
