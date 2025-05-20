@@ -170,9 +170,23 @@ npm start
 
 ## Bảo mật
 
-- KHÔNG commit file `.env` lên GitHub
-- Bảo vệ các khóa API và thông tin nhạy cảm
-- Sử dụng biến môi trường cho mọi thông tin xác thực
+### Cấu hình Firebase
+1. Tạo file `.env` trong thư mục `client` dựa trên file `.env.example`
+2. Điền đầy đủ thông tin cấu hình Firebase từ Firebase Console
+3. KHÔNG BAO GIỜ commit file `.env` lên GitHub
+4. Thêm `.env` vào file `.gitignore`
+
+### Quy tắc Bảo mật Firestore
+1. Chỉ cho phép người dùng đã xác thực truy cập dữ liệu của họ
+2. Ngăn chặn truy cập trái phép vào dữ liệu người dùng khác
+3. Kiểm tra tính hợp lệ của dữ liệu trước khi lưu
+4. Giới hạn số lượng request từ mỗi IP
+
+### Bảo vệ API
+1. Sử dụng rate limiting để ngăn chặn tấn công brute force
+2. Xác thực token cho mọi request
+3. Mã hóa dữ liệu nhạy cảm
+4. Sử dụng HTTPS cho mọi kết nối
 
 ## Công nghệ sử dụng
 

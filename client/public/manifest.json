@@ -23,6 +23,7 @@
   ],
   "start_url": ".",
   "display": "standalone",
+  "display_override": ["window-controls-overlay"],
   "theme_color": "#667eea",
   "background_color": "#ffffff",
   "orientation": "portrait",
@@ -63,5 +64,21 @@
     "Cross Platform",
     "Offline Support",
     "Push Notifications"
-  ]
+  ],
+  "file_handlers": [
+    {
+      "action": "/open-file",
+      "accept": {
+        "text/*": [".txt", ".md"],
+        "image/*": [".png", ".jpg", ".jpeg", ".gif"]
+      }
+    }
+  ],
+  "handle_links": "preferred",
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": ["focus-existing", "auto"]
+  }
 } 

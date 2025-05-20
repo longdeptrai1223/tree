@@ -1,0 +1,45 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    function isValidUserData() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['email', 'currentAu', 'referralCode', 'referralMultiplier', 'createdAt']) &&
+             data.email is string &&
+             data.currentAu is number &&
+             data.referralCode is string &&
+             data.referralMultiplier is number &&
+             data.createdAt is timestamp;
+    }
+
+    // Users collection rules
+    match /users/{userId} {
+      allow read: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && isOwner(userId) && isValidUserData();
+      allow update: if isAuthenticated() && isOwner(userId) && isValidUserData();
+      allow delete: if false; // Prevent user deletion
+    }
+
+    // Referrals collection rules
+    match /referrals/{referralId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+        request.resource.data.referrerId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+} 
