@@ -1,9 +1,6 @@
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
+import { db, auth } from '../config/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
-
-const db = getFirestore();
-const auth = getAuth();
 
 // Khởi tạo FingerprintJS
 let fpPromise = null;

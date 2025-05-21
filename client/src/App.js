@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
-import { getAuth, signOut } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
 import FileHandler from './pages/FileHandler';
 import CountdownTimer from './components/CountdownTimer';
 import { getDeviceId, checkDeviceAvailability, linkDeviceToUser, updateDeviceLastActive } from './services/deviceService';
 import './styles/CountdownTimer.css';
 import './styles/App.css';
+import { auth } from './config/firebase';
 
 function App() {
   const [user, setUser] = useState(null);
   const [deviceId, setDeviceId] = useState(null);
   const [error, setError] = useState(null);
-  const auth = getAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
