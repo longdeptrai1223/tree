@@ -2,11 +2,33 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper functions
+    // Kiểm tra người dùng đã đăng nhập
     function isAuthenticated() {
       return request.auth != null;
     }
     
+    // Kiểm tra người dùng là chủ sở hữu của thiết bị
+    function isDeviceOwner(deviceId) {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/devices/$(deviceId)).data.userId == request.auth.uid;
+    }
+
+    // Rules cho collection devices
+    match /devices/{deviceId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.userId == request.auth.uid || !resource.exists);
+      allow create: if isAuthenticated();
+      allow update: if isDeviceOwner(deviceId);
+      allow delete: if isDeviceOwner(deviceId);
+    }
+
+    // Rules cho collection users
+    match /users/{userId} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Helper functions
     function isOwner(userId) {
       return request.auth.uid == userId;
     }
@@ -21,23 +43,12 @@ service cloud.firestore {
              data.createdAt is timestamp;
     }
 
-    // Users collection rules
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-
     // Referrals collection rules
     match /referrals/{referralId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated() && 
         request.resource.data.referrerId == request.auth.uid;
       allow update, delete: if false;
-    }
-
-    // Devices collection rules
-    match /devices/{deviceId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
     }
 
     // Default deny
