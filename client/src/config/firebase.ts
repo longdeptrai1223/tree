@@ -18,4 +18,5 @@ const app = initializeApp(firebaseConfig);
 console.log('FIREBASE ENV:', process.env.REACT_APP_FIREBASE_API_KEY);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export const analytics = getAnalytics(app); 
+export const analytics = getAnalytics(app);
+export default app; 
